@@ -1,0 +1,62 @@
+#Importing necessary libraries and modules
+pip install cryptography
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.backends import default_backend
+
+
+# Defining cipher texts
+cipher_text_1 = b"This is my first ciphered text"
+cipher_text_2 = b"This is my second ciphered text"
+
+# Generating the RSA key pair
+private_key = rsa.generate_private_key(
+    public_exponent=65537,
+    key_size=2048,
+    backend=default_backend()
+)
+
+public_key = private_key.public_key()
+
+
+# Encrypt messages
+encrypted_message_1 = public_key.encrypt(
+    cipher_text_1,
+    padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+        algorithm=hashes.SHA256(),
+        label=None
+    )
+)
+
+encrypted_message_2 = public_key.encrypt(
+    cipher_text_2,
+    padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+        algorithm=hashes.SHA256(),
+        label=None
+    )
+)
+
+# Decrypt messages
+decrypted_message_1 = private_key.decrypt(
+    encrypted_message_1,
+    padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+        algorithm=hashes.SHA256(),
+        label=None
+    )
+).decode()
+
+decrypted_message_2 = private_key.decrypt(
+    encrypted_message_2,
+    padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+        algorithm=hashes.SHA256(),
+        label=None
+    )
+).decode()
+
+print('Text_1:', decrypted_message_1)
+print('Text_2:', decrypted_message_2)
